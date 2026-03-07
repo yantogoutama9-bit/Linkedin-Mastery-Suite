@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jangan Sampai Terpengaruh Roh Doeg - Aplikasi Khotbah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        h1, h2, h3, .display-font {
+            font-family: 'Outfit', sans-serif;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .verse-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-left: 4px solid #f59e0b;
+        }
+        .warning-pulse {
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+        }
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-shield-alt text-white text-lg"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight">Anti<span class="text-amber-500">Doeg</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <button onclick="scrollToSection('home')" class="hover:text-amber-400 transition-colors text-sm font-medium">Beranda</button>
+                    <button onclick="scrollToSection('sermon')" class="hover:text-amber-400 transition-colors text-sm font-medium">Khotbah</button>
+                    <button onclick="scrollToSection('check')" class="hover:text-amber-400 transition-colors text-sm font-medium">Cek Diri</button>
+                    <button onclick="scrollToSection('journal')" class="hover:text-amber-400 transition-colors text-sm font-medium">Jurnal</button>
+                    <button onclick="downloadPDF()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full text-sm font-bold hover:scale-105 transition-transform shadow-lg shadow-blue-500/25 flex items-center gap-2">
+                        <i class="fas fa-download"></i>
+                        Download PDF
+                    </button>
+                </div>
+                <div class="flex items-center gap-2 md:hidden">
+                    <button onclick="downloadPDF()" class="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button onclick="toggleMenu()" class="text-2xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700">
+            <div class="px-4 pt-2 pb-4 space-y-2">
+                <button onclick="scrollToSection('home')" class="block w-full text-left py-2 hover:text-amber-400">Beranda</button>
+                <button onclick="scrollToSection('sermon')" class="block w-full text-left py-2 hover:text-amber-400">Khotbah</button>
+                <button onclick="scrollToSection('check')" class="block w-full text-left py-2 hover:text-amber-400">Cek Diri</button>
+                <button onclick="scrollToSection('journal')" class="block w-full text-left py-2 hover:text-amber-400">Jurnal</button>
+                <button onclick="downloadPDF()" class="block w-full text-left py-2 text-blue-400 font-semibold">
+                    <i class="fas fa-download mr-2"></i>Download PDF Materi
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-32 pb-20 px-4 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 float-anim"></div>
+            <div class="absolute top-40 right-10 w-72 h-72 bg-amber-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 float-anim" style="animation-delay: 2s"></div>
+            <div class="absolute -bottom-8 left-1/2 w-72 h-72 bg-red-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 float-anim" style="animation-delay: 4s"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="slide-in">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-semibold mb-6 warning-pulse">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>WASPADA: 1 Samuel 21:7</span>
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-6">
+                        Jangan Sampai <span class="gradient-text">Terpengaruh</span> Roh Doeg!
+                    </h1>
+                    <p class="text-xl text-slate-300 mb-8 leading-relaxed">
+                        Tetap setia pada Tuhan di tengah tekanan teman sebaya, medsos, dan godaan duniawi. Pelajari cara mengenali dan mengalahkan roh licik yang ingin menghancurkan masa depanmu.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="scrollToSection('sermon')" class="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg shadow-orange-500/25 flex items-center gap-2">
+                            <i class="fas fa-book-open"></i>
+                            Mulai Khotbah
+                        </button>
+                        <button onclick="downloadPDF()" class="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg shadow-blue-500/25 flex items-center gap-2">
+                            <i class="fas fa-file-pdf"></i>
+                            Download Materi
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="relative z-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 border border-slate-700 shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center">
+                                <i class="fas fa-user-secret text-3xl text-red-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-red-400">Roh Doeg</h3>
+                                <p class="text-slate-400">1 Samuel 21:7</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 text-slate-300">
+                                <i class="fas fa-eye text-amber-500"></i>
+                                <span>Licik & Pengintai</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-slate-300">
+                                <i class="fas fa-heart-broken text-red-400"></i>
+                                <span>Penuh Iri & Dendam</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-slate-300">
+                                <i class="fas fa-skull text-purple-400"></i>
+                                <span>Membunuh 85 Imam</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-slate-300">
+                                <i class="fas fa-mask text-orange-400"></i>
+                                <span>Pura-pura Setia</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-red-500/10 rounded-xl border border-red-500/20">
+                            <p class="text-sm text-red-200 italic">"Ada juga di situ seorang Ishmael namanya Doeg, orang Edom itu, kepala gembala-saung Saul"</p>
+                        </div>
+                    </div>
+                    <div class="absolute -inset-4 bg-gradient-to-r from-amber-500 to-red-600 rounded-3xl opacity-20 blur-2xl -z-10"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Progress Tracker -->
+    <div class="sticky top-16 z-40 bg-slate-900/95 border-b border-slate-800 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between text-sm text-slate-400 mb-2">
+                <span>Progress Belajar</span>
+                <span id="progressText">0%</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2">
+                <div id="progressBar" class="progress-bar bg-gradient-to-r from-amber-500 to-orange-600 h-2 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sermon Section -->
+    <section id="sermon" class="py-20 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-16 gap-4">
+                <div class="text-center md:text-left">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-4">Struktur <span class="text-amber-500">Khotbah</span></h2>
+                    <p class="text-slate-400 text-lg">Pelajari langkah demi langkah untuk mengenali dan mengalahkan roh Doeg</p>
+                </div>
+                <button onclick="downloadPDF()" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg shadow-blue-500/25 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fas fa-file-download"></i>
+                    Download PDF
+                </button>
+            </div>
+
+            <!-- Section 1: Introduction -->
+            <div class="mb-12 sermon-section" data-section="1">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-slate-900 font-bold text-xl">1</div>
+                    <div>
+                        <h3 class="text-2xl font-bold">Pendahuluan: Kenali "Roh Doeg" di Zaman Sekarang</h3>
+                        <p class="text-slate-400">Durasi: 5-7 menit</p>
+                    </div>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-6 md:p-8 space-y-6">
+                    <div class="bg-slate-800/50 rounded-xl p-6 border-l-4 border-amber-500">
+                        <h4 class="font-bold text-amber-400 mb-3 flex items-center gap-2">
+                            <i class="fas fa-gamepad"></i>
+                            Ilustrasi Awal (Relatable untuk Remaja)
+                        </h4>
+                        <p class="text-slate-300 leading-relaxed">
+                            Bayangkan kamu lagi main game online bareng teman, tiba-tiba ada yang curang dan ajak kamu ikut. Kalau ikut, kamu senang sebentar, tapi nanti ketahuan guru BK atau ortu marah besar. <span class="text-amber-400 font-semibold">Itu mirip roh Doeg</span> – licik, merusak, dan bikin kamu jatuh.
+                        </p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="verse-card rounded-xl p-6">
+                            <h4 class="font-bold text-amber-400 mb-2">Teks Utama</h4>
+                            <p class="text-slate-300 italic mb-3">"Maka pada hari itu juga ada di sana salah seorang pegawai Saul. yang dikhususkan melayani TUHA; namanya Doeg, seorang Edom, pengawas atas gembala-gembala Saul"</p>
+                            <p class="text-sm text-slate-500">1 Samuel 21:7 (TB)</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                            <h4 class="font-bold text-red-400 mb-3">Konteks Kisah</h4>
+                            <ul class="space-y-2 text-slate-300 text-sm">
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1"></i>
+                                    <span>Daud melarikan diri dari Saul</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1"></i>
+                                    <span>Bertemu Ahimelekh di Nob</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1"></i>
+                                    <span>Doeg melihat & melapor (pengkhianatan)</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1"></i>
+                                    <span>Akibat: 85 imam terbunuh (1 Sam 22)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-red-900/20 to-orange-900/20 rounded-xl p-6 border border-red-500/20">
+                        <h4 class="font-bold text-red-400 mb-4 flex items-center gap-2">
+                            <i class="fas fa-virus"></i>
+                            Analogi Virus
+                        </h4>
+                        <p class="text-slate-300">
+                            Seperti virus di HP-mu yang kelihatan keren tapi bikin rusak data – <span class="text-white font-semibold">roh Doeg juga gitu</span>, awalnya manis tapi akhirnya hancurkan masa depanmu.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-700">
+                        <button onclick="markComplete(1)" class="mark-complete px-6 py-3 bg-slate-800 hover:bg-green-600 rounded-lg transition-colors flex items-center gap-2 group">
+                            <i class="fas fa-check group-hover:scale-110 transition-transform"></i>
+                            <span>Tandai Selesai</span>
+                        </button>
+                        <span class="text-slate-500 text-sm">Klik untuk update progress</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Characteristics -->
+            <div class="mb-12 sermon-section" data-section="2">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-xl">2</div>
+                    <div>
+                        <h3 class="text-2xl font-bold">Ciri-Ciri Roh Doeg yang Harus Dihindari</h3>
+                        <p class="text-slate-400">Durasi: 10 menit</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Characteristic 1 -->
+                    <div class="glass-card rounded-2xl p-6 hover:border-red-500/50 transition-colors cursor-pointer" onclick="toggleDetail('detail1')">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user-secret text-red-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-red-400 mb-2">1. Licik dan Pengkhianat</h4>
+                                    <p class="text-slate-400 text-sm mb-2">1 Samuel 22:9-10</p>
+                                    <p class="text-slate-300">Doeg lihat Daud, tapi bukannya bantu, malah lapor ke Saul.</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-slate-500 transition-transform" id="icon1"></i>
+                        </div>
+                        <div id="detail1" class="hidden mt-6 pt-6 border-t border-slate-700 pl-16">
+                            <div class="bg-slate-800/50 rounded-lg p-4 mb-4">
+                                <h5 class="font-semibold text-amber-400 mb-2">Aplikasi untuk Remaja:</h5>
+                                <p class="text-slate-300 mb-3">Di WA group, jangan jadi "Doeg" yang nyebar gosip teman.</p>
+                                <div class="verse-card rounded-lg p-4 mb-3">
+                                    <p class="text-sm text-slate-300 italic">"Siapa mengumpat, membuka rahasia, tetapi siapa yang setia, menutupi perkara."</p>
+                                    <p class="text-xs text-slate-500 mt-1">Amsal 11:13</p>
+                                </div>
+                                <div class="flex items-center gap-2 text-green-400 text-sm">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Contoh: Kalau teman cerita masalah, simpan baik-baik, jangan share ke story IG.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Characteristic 2 -->
+                    <div class="glass-card rounded-2xl p-6 hover:border-orange-500/50 transition-colors cursor-pointer" onclick="toggleDetail('detail2')">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-heart-broken text-orange-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-orange-400 mb-2">2. Iri Hati dan Dendam</h4>
+                                    <p class="text-slate-400 text-sm mb-2">1 Samuel 22:18-19</p>
+                                    <p class="text-slate-300">Doeg bunuh imam gara-gara iri Daud lebih dipercaya Tuhan.</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-slate-500 transition-transform" id="icon2"></i>
+                        </div>
+                        <div id="detail2" class="hidden mt-6 pt-6 border-t border-slate-700 pl-16">
+                            <div class="bg-slate-800/50 rounded-lg p-4">
+                                <h5 class="font-semibold text-amber-400 mb-2">Aplikasi untuk Remaja:</h5>
+                                <p class="text-slate-300 mb-3">Kalau temanmu dapat nilai bagus atau juara lomba, jangan iri.</p>
+                                <div class="verse-card rounded-lg p-4 mb-3">
+                                    <p class="text-sm text-slate-300 italic">"Sebab di mana ada iri hati dan mementingkan diri sendiri disitu ada kekacauan dan segala macam perbuatan jahat."</p>
+                                    <p class="text-xs text-slate-500 mt-1">Yakobus 3:16</p>
+                                </div>
+                                <div class="flex items-center gap-2 text-green-400 text-sm">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Rayakan sukses orang lain, Tuhan kasih berkatmu nanti (Mazmur 37:4).</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Characteristic 3 -->
+                    <div class="glass-card rounded-2xl p-6 hover:border-purple-500/50 transition-colors cursor-pointer" onclick="toggleDetail('detail3')">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-mask text-purple-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-purple-400 mb-2">3. Setia pada yang Salah</h4>
+                                    <p class="text-slate-400 text-sm mb-2">1 Samuel 21:7</p>
+                                    <p class="text-slate-300">Doeg setia buta ke Saul yang gila dendam, bukan ke Tuhan.</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-slate-500 transition-transform" id="icon3"></i>
+                        </div>
+                        <div id="detail3" class="hidden mt-6 pt-6 border-t border-slate-700 pl-16">
+                            <div class="bg-slate-800/50 rounded-lg p-4">
+                                <h5 class="font-semibold text-amber-400 mb-2">Aplikasi untuk Remaja:</h5>
+                                <p class="text-slate-300 mb-3">Jangan ikut tren medsos yang haram seperti challenge berbahaya atau konten negatif.</p>
+                                <div class="verse-card rounded-lg p-4">
+                                    <p class="text-sm text-slate-300 italic">"Firman-Mu itu pelita bagi kakiku dan terang bagi jalanku."</p>
+                                    <p class="text-xs text-slate-500 mt-1">Mazmur 119:105</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end pt-4">
+                        <button onclick="markComplete(2)" class="mark-complete px-6 py-3 bg-slate-800 hover:bg-green-600 rounded-lg transition-colors flex items-center gap-2 group">
+                            <i class="fas fa-check group-hover:scale-110 transition-transform"></i>
+                            <span>Tandai Bagian 2 Selesai</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: How to Defeat -->
+            <div class="mb-12 sermon-section" data-section="3">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-slate-900 font-bold text-xl">3</div>
+                    <div>
+                        <h3 class="text-2xl font-bold">Cara Mengalahkan Roh Doeg Seperti Daud</h3>
+                        <p class="text-slate-400">Durasi: 10 menit</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Step 1 -->
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-blue-500 hover:transform hover:-translate-y-2 transition-transform">
+                        <div class="w-14 h-14 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-running text-2xl text-blue-400"></i>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 text-blue-400">1. Waspada & Lari</h4>
+                        <p class="text-slate-400 text-sm mb-3">2 Timotius 2:22</p>
+                        <p class="text-slate-300 text-sm mb-4">"Sebab itu jauhilah nafsu orang muda..."</p>
+                        <div class="bg-slate-800 rounded-lg p-3 text-sm text-slate-300">
+                            <i class="fas fa-lightbulb text-amber-500 mr-2"></i>
+                            Kalau ada teman ajak bolos atau nonton film porno, kabur! Unfollow akun yang toksik.
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-green-500 hover:transform hover:-translate-y-2 transition-transform">
+                        <div class="w-14 h-14 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-users text-2xl text-green-400"></i>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 text-green-400">2. Bergaul Benar</h4>
+                        <p class="text-slate-400 text-sm mb-3">1 Korintus 15:33</p>
+                        <p class="text-slate-300 text-sm mb-4">"Janganlah kamu sesat: Pergaulan yang buruk merusakkan kebiasaan yang baik."</p>
+                        <div class="bg-slate-800 rounded-lg p-3 text-sm text-slate-300">
+                            <i class="fas fa-lightbulb text-amber-500 mr-2"></i>
+                            Cari komunitas pemuda gereja atau teman yang suka baca Alkitab.
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="glass-card rounded-2xl p-6 border-t-4 border-amber-500 hover:transform hover:-translate-y-2 transition-transform">
+                        <div class="w-14 h-14 bg-amber-500/20 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-pray text-2xl text-amber-400"></i>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 text-amber-400">3. Percaya & Berdoa</h4>
+                        <p class="text-slate-400 text-sm mb-3">Mazmur 25:4-5</p>
+                        <p class="text-slate-300 text-sm mb-4">"beritahukanlah jalan-jalan-Mu kepadaku, ya TUHAN, tunjukkanlah itu kepadaku."</p>
+                        <div class="bg-slate-800 rounded-lg p-3 text-sm text-slate-300">
+                            <i class="fas fa-lightbulb text-amber-500 mr-2"></i>
+                            Tiap pagi, baca Alkitab 5 menit dan doa minta perlindungan.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 glass-card rounded-2xl p-6 border border-amber-500/30">
+                    <h4 class="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
+                        <i class="fas fa-book"></i>
+                        Aplikasi Mingguan: Jurnal Anti-Doeg
+                    </h4>
+                    <p class="text-slate-300 mb-4">Buat "jurnal anti-Doeg" di notes HP: Catat godaan hari ini dan ayat yang bantu lawan.</p>
+                    <button onclick="scrollToSection('journal')" class="px-6 py-3 bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors text-sm font-semibold">
+                        Buka Jurnal Digital <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-end pt-6">
+                    <button onclick="markComplete(3)" class="mark-complete px-6 py-3 bg-slate-800 hover:bg-green-600 rounded-lg transition-colors flex items-center gap-2 group">
+                        <i class="fas fa-check group-hover:scale-110 transition-transform"></i>
+                        <span>Tandai Bagian 3 Selesai</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 4: Conclusion -->
+            <div class="mb-12 sermon-section" data-section="4">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl">4</div>
+                    <div>
+                        <h3 class="text-2xl font-bold">Kesimpulan & Panggilan Altar</h3>
+                        <p class="text-slate-400">Durasi: 5 menit</p>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-8 text-center border-2 border-amber-500/30 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500"></div>
+                    
+                    <h4 class="text-3xl font-bold mb-6 gradient-text">Roh Doeg ingin hancurkan masa depanmu, tapi Tuhan lebih kuat!</h4>
+                    
+                    <p class="text-xl text-slate-300 mb-8 leading-relaxed">
+                        Seperti Daud yang jadi raja, kamu bisa jadi pemimpin hebat kalau tolak roh itu. 
+                        <br><span class="text-amber-400 font-bold">Hari ini, putuskan: Aku pilih setia Tuhan, bukan ikut Doeg!</span>
+                    </p>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-8 text-left">
+                        <div class="bg-slate-800/50 rounded-xl p-6">
+                            <h5 class="font-bold text-red-400 mb-3 flex items-center gap-2">
+                                <i class="fas fa-times-circle"></i>
+                                Tolak Roh Doeg
+                            </h5>
+                            <ul class="space-y-2 text-slate-300 text-sm">
+                                <li>• Licik & pengkhianat</li>
+                                <li>• Iri & dendam</li>
+                                <li>• Setia pada yang salah</li>
+                                <li>• Merusak pertemanan</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-800/50 rounded-xl p-6">
+                            <h5 class="font-bold text-green-400 mb-3 flex items-center gap-2">
+                                <i class="fas fa-check-circle"></i>
+                                Pilih Roh Kudus
+                            </h5>
+                            <ul class="space-y-2 text-slate-300 text-sm">
+                                <li>• Kasih & sukacita</li>
+                                <li>• Damai sejahtera</li>
+                                <li>• Kesabaran & kebaikan</li>
+                                <li>• Setia & lemah lembut</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="verse-card rounded-xl p-6 mb-8 text-left">
+                        <p class="text-lg text-slate-300 italic mb-2">"Tetapi buah Roh ialah kasih, sukacita, damai sejahtera, kesabaran, kemurahan, kebaikan, kesetiaan..."</p>
+                        <p class="text-slate-500">Galatia 5:22</p>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button onclick="markComplete(4); showPrayerModal()" class="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg shadow-orange-500/25">
+                            <i class="fas fa-pray mr-2"></i>
+                            Doa Penerimaan
+                        </button>
+                        <button onclick="downloadPDF()" class="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg shadow-blue-500/25 flex items-center gap-2">
+                            <i class="fas fa-file-pdf"></i>
+                            Download Materi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Self Check Section -->
+    <section id="check" class="py-20 px-4 bg-slate-800/30">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Cek <span class="text-amber-500">Diri</span></h2>
+                <p class="text-slate-400">Evaluasi apakah kamu terpengaruh roh Doeg</p>
+            </div>
+
+            <div class="glass-card rounded-2xl p-8">
+                <div id="quizContainer" class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-item" data-question="1">
+                        <h4 class="text-lg font-semibold mb-4 flex items-center gap-3">
+                            <span class="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center text-sm">1</span>
+                            Apakah kamu pernah menyebarkan rahasia teman di media sosial?
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="answerQuiz(1, 'yes')" class="quiz-btn p-4 rounded-xl border border-slate-600 hover:border-red-500 hover:bg-red-500/10 transition-all text-left">
+                                <i class="fas fa-times text-red-400 mb-2 block text-xl"></i>
+                                <span class="text-sm">Ya, pernah</span>
+                            </button>
+                            <button onclick="answerQuiz(1, 'no')" class="quiz-btn p-4 rounded-xl border border-slate-600 hover:border-green-500 hover:bg-green-500/10 transition-all text-left">
+                                <i class="fas fa-check text-green-400 mb-2 block text-xl"></i>
+                                <span class="text-sm">Tidak, saya jaga rahasia</span>
+                            </button>
+                        </div>
+                        <div class="quiz-feedback hidden mt-4 p-4 rounded-lg bg-slate-800 text-sm"></div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="quiz-item hidden" data-question="2">
+                        <h4 class="text-lg font-semibold mb-4 flex items-center gap-3">
+                            <span class="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center text-sm">2</span>
+                            Bagaimana reaksimu ketika teman mendapat prestasi lebih baik darimu?
+                        </h4>
+                        <div class="space-y-3">
+                            <button onclick="answerQuiz(2, 'bad')" class="quiz-btn w-full p-4 rounded-xl border border-slate-600 hover:border-red-500 hover:bg-red-500/10 transition-all text-left flex items-center gap-3">
+                                <i class="fas fa-angry text-red-400"></i>
+                                <span>Iri dan mencari kesalahan dia</span>
+                            </button>
+                            <button onclick="answerQuiz(2, 'neutral')" class="quiz-btn w-full p-4 rounded-xl border border-slate-600 hover:border-yellow-500 hover:bg-yellow-500/10 transition-all text-left flex items-center gap-3">
+                                <i class="fas fa-meh text-yellow-400"></i>
+                                <span>Diam saja, tidak peduli</span>
+                            </button>
+                            <button onclick="answerQuiz(2, 'good')" class="quiz-btn w-full p-4 rounded-xl border border-slate-600 hover:border-green-500 hover:bg-green-500/10 transition-all text-left flex items-center gap-3">
+                                <i class="fas fa-smile text-green-400"></i>
+                                <span>Memberi selamat dan bersyukur</span>
+                            </button>
+                        </div>
+                        <div class="quiz-feedback hidden mt-4 p-4 rounded-lg bg-slate-800 text-sm"></div>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="quiz-item hidden" data-question="3">
+                        <h4 class="text-lg font-semibold mb-4 flex items-center gap-3">
+                            <span class="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center text-sm">3</span>
+                            Apakah kamu mengikuti tren medsos meski bertentangan dengan nilai iman?
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="answerQuiz(3, 'yes')" class="quiz-btn p-4 rounded-xl border border-slate-600 hover:border-red-500 hover:bg-red-500/10 transition-all text-left">
+                                <i class="fas fa-thumbs-up text-red-400 mb-2 block text-xl"></i>
+                                <span class="text-sm">Ya, demi FYP & like</span>
+                            </button>
+                            <button onclick="answerQuiz(3, 'no')" class="quiz-btn p-4 rounded-xl border border-slate-600 hover:border-green-500 hover:bg-green-500/10 transition-all text-left">
+                                <i class="fas fa-shield-alt text-green-400 mb-2 block text-xl"></i>
+                                <span class="text-sm">Tidak, saya pilih setia Tuhan</span>
+                            </button>
+                        </div>
+                        <div class="quiz-feedback hidden mt-4 p-4 rounded-lg bg-slate-800 text-sm"></div>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="quizResult" class="hidden text-center py-8">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center text-4xl" id="resultIcon"></div>
+                        <h3 class="text-2xl font-bold mb-4" id="resultTitle"></h3>
+                        <p class="text-slate-300 mb-6" id="resultText"></p>
+                        <button onclick="resetQuiz()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors">
+                            <i class="fas fa-redo mr-2"></i>Coba Lagi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Journal Section -->
+    <section id="journal" class="py-20 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Jurnal <span class="text-amber-500">Anti-Doeg</span></h2>
+                <p class="text-slate-400">Catat perjalanan spiritualmu setiap hari</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card rounded-xl p-6 text-center">
+                    <div class="text-3xl font-bold text-amber-400 mb-2" id="totalEntries">0</div>
+                    <div class="text-sm text-slate-400">Total Entri</div>
+                </div>
+                <div class="glass-card rounded-xl p-6 text-center">
+                    <div class="text-3xl font-bold text-green-400 mb-2" id="currentStreak">0</div>
+                    <div class="text-sm text-slate-400">Hari Beruntun</div>
+                </div>
+                <div class="glass-card rounded-xl p-6 text-center">
+                    <div class="text-3xl font-bold text-blue-400 mb-2" id="versesMemorized">0</div>
+                    <div class="text-sm text-slate-400">Ayat Dihafal</div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-pen-fancy text-amber-500"></i>
+                    Entri Baru
+                </h3>
+                <form id="journalForm" class="space-y-4" onsubmit="addJournalEntry(event)">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Godaan/Roh Doeg apa yang kamu hadapi hari ini?</label>
+                        <textarea id="temptation" rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-4 text-white focus:border-amber-500 focus:outline-none transition-colors" placeholder="Contoh: Teman ajak nyontek ujian..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Ayat apa yang membantumu?</label>
+                        <input type="text" id="verse" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-4 text-white focus:border-amber-500 focus:outline-none transition-colors" placeholder="Contoh: Amsal 11:13">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Bagaimana kamu menang?</label>
+                        <textarea id="victory" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-4 text-white focus:border-amber-500 focus:outline-none transition-colors" placeholder="Contoh: Menolak dan memilih jujur..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 rounded-lg font-bold hover:opacity-90 transition-opacity">
+                        <i class="fas fa-save mr-2"></i>Simpan Jurnal
+                    </button>
+                </form>
+            </div>
+
+            <div id="journalEntries" class="space-y-4">
+                <div class="text-center text-slate-500 py-8" id="emptyState">
+                    <i class="fas fa-book-open text-4xl mb-4 opacity-50"></i>
+                    <p>Belum ada entri. Mulai catat perjalananmu hari ini!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-12 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-br from-amber-500 to-red-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-white text-xl"></i>
+                </div>
+                <span class="font-bold text-2xl">Anti<span class="text-amber-500">Doeg</span></span>
+            </div>
+            <p class="text-slate-400 mb-6 max-w-2xl mx-auto">
+                "Jangan sampai ada roh Doeg dalam hidupmu. Pilih setia pada Tuhan!"
+                <br>1 Samuel 21:7
+            </p>
+            <div class="flex justify-center gap-6 text-slate-500 mb-6">
+                <button onclick="scrollToSection('home')" class="hover:text-amber-400 transition-colors">Beranda</button>
+                <button onclick="scrollToSection('sermon')" class="hover:text-amber-400 transition-colors">Khotbah</button>
+                <button onclick="scrollToSection('check')" class="hover:text-amber-400 transition-colors">Cek Diri</button>
+                <button onclick="scrollToSection('journal')" class="hover:text-amber-400 transition-colors">Jurnal</button>
+            </div>
+            <button onclick="downloadPDF()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-sm font-semibold inline-flex items-center gap-2 mb-6">
+                <i class="fas fa-download"></i>
+                Download Materi PDF
+            </button>
+            <div class="mt-8 pt-8 border-t border-slate-800 text-sm text-slate-600">
+                <p>&copy; 2026 Aplikasi Khotbah Anti-Doeg. Dibuat untuk edukasi rohani.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Prayer Modal -->
+    <div id="prayerModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-amber-500/30 rounded-2xl max-w-lg w-full p-8 relative transform scale-95 opacity-0 transition-all duration-300" id="modalContent">
+            <button onclick="closePrayerModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-pray text-3xl text-amber-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold gradient-text">Doa Penerimaan</h3>
+            </div>
+
+            <div class="space-y-4 text-slate-300 leading-relaxed mb-6 max-h-60 overflow-y-auto hide-scrollbar">
+                <p>Tuhan Yesus,</p>
+                <p>Saya mengakui bahwa saya pernah terpengaruh oleh roh Doeg – licik, iri, dan setia pada hal yang salah.</p>
+                <p>Hari ini, saya bertobat. Hapus roh Doeg dari hidup saya.</p>
+                <p>Isi saya dengan Roh-Mu yang Kudus:</p>
+                <ul class="list-disc list-inside space-y-1 text-amber-400 ml-4">
+                    <li>Kasih yang tulus</li>
+                    <li>Sukacita yang abadi</li>
+                    <li>Damai sejahtera</li>
+                    <li>Kesetiaan pada kebenaran</li>
+                </ul>
+                <p>Jadikan saya seperti Daud – setia pada-Mu meski dalam tekanan.</p>
+                <p>Dalam nama Yesus, saya berdoa.</p>
+                <p class="font-bold text-amber-400">Amin.</p>
+            </div>
+
+            <button onclick="closePrayerModal(); markComplete(4)" class="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 rounded-lg font-bold hover:opacity-90 transition-opacity">
+                <i class="fas fa-check mr-2"></i>Saya Menerima
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Progress Tracking
+        let completedSections = new Set();
+        const totalSections = 4;
+
+        function markComplete(section) {
+            completedSections.add(section);
+            updateProgress();
+            
+            const btn = event.target.closest('button');
+            btn.innerHTML = '<i class="fas fa-check-double mr-2"></i> Selesai';
+            btn.classList.remove('bg-slate-800');
+            btn.classList.add('bg-green-600');
+            btn.disabled = true;
+        }
+
+        function updateProgress() {
+            const percentage = (completedSections.size / totalSections) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = Math.round(percentage) + '%';
+        }
+
+        // Toggle Details
+        function toggleDetail(id) {
+            const detail = document.getElementById(id);
+            const icon = document.getElementById('icon' + id.replace('detail', ''));
+            
+            if (detail.classList.contains('hidden')) {
+                detail.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                detail.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Quiz Logic
+        let quizAnswers = {};
+
+        function answerQuiz(question, answer) {
+            quizAnswers[question] = answer;
+            
+            const currentQ = document.querySelector(`[data-question="${question}"]`);
+            const feedback = currentQ.querySelector('.quiz-feedback');
+            const buttons = currentQ.querySelectorAll('.quiz-btn');
+            
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+            });
+            
+            event.target.closest('.quiz-btn').classList.remove('opacity-50');
+            event.target.closest('.quiz-btn').classList.add('ring-2', 'ring-amber-500');
+            
+            feedback.classList.remove('hidden');
+            
+            if (question === 1) {
+                if (answer === 'yes') {
+                    feedback.className = 'quiz-feedback mt-4 p-4 rounded-lg bg-red-500/20 text-red-200 text-sm';
+                    feedback.innerHTML = '<i class="fas fa-exclamation-circle mr-2"></i><strong>Waspada!</strong> Ini ciri roh Doeg. Mulai sekarang, jadilah teman yang bisa dipercaya. Amsal 11:13 mengingatkan kita untuk menutup perkara.';
+                } else {
+                    feedback.className = 'quiz-feedback mt-4 p-4 rounded-lg bg-green-500/20 text-green-200 text-sm';
+                    feedback.innerHTML = '<i class="fas fa-check-circle mr-2"></i><strong>Bagus!</strong> Kamu sudah menolak sifat licik Doeg. Terus jaga kepercayaan temanmu.';
+                }
+            } else if (question === 2) {
+                if (answer === 'bad') {
+                    feedback.className = 'quiz-feedback mt-4 p-4 rounded-lg bg-red-500/20 text-red-200 text-sm';
+                    feedback.innerHTML = '<i class="fas fa-heart-broken mr-2"></i><strong>Hati-hati!</strong> Iri hati adalah benih kejahatan. Yakobus 3:16 bilang ini bikin kekacauan.';
+                } else if (answer === 'neutral') {
+                    feedback.className = 'quiz-feedback mt-4 p-4 rounded-lg bg-yellow-500/20 text-yellow-200 text-sm';
+                    feedback.innerHTML = '<i class="fas fa-meh mr-2"></i>Coba lebih aktif merayakan sukses teman. Mazmur 37:4 bilang kalau kita bersyukur, Tuhan kasih keinginan hati kita.';
+                } else {
+                    feedback.className = 'quiz-feedback mt-4 p-4 rounded-lg bg-green-500/20 text-green-200 text-sm';
+                    feedback.innerHTML = '<i class="fas fa-heart mr-2"></i><strong>Hebat!</strong> Kamu punya hati yang tidak iri. Terus pertahankan sikap positif ini!';
+                }
+            } else if (question === 3) {
+                if (answer === 'yes') {
+                    feedback.className = 'quiz-feedback mt-4 p-4 rounded-lg bg-red-500/20 text-red-200 text-sm';
+                    feedback.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i><strong>Bahaya!</strong> Jangan sampai popularitas medsos bikin kamu jauh dari Tuhan. Mazmur 119:105 ingatkan firman Tuhan adalah pelita.';
+                } else {
+                    feedback.className = 'quiz-feedback mt-4 p-4 rounded-lg bg-green-500/20 text-green-200 text-sm';
+                    feedback.innerHTML = '<i class="fas fa-shield-alt mr-2"></i><strong>Luar Biasa!</strong> Kamu memilih setia pada Tuhan meski ada tekanan. Daud akan bangga padamu!';
+                }
+                
+                setTimeout(showFinalResult, 1500);
+            }
+            
+            if (question < 3) {
+                setTimeout(() => {
+                    currentQ.classList.add('hidden');
+                    document.querySelector(`[data-question="${question + 1}"]`).classList.remove('hidden');
+                }, 2000);
+            }
+        }
+
+        function showFinalResult() {
+            document.getElementById('quizContainer').querySelectorAll('.quiz-item').forEach(item => item.classList.add('hidden'));
+            const resultDiv = document.getElementById('quizResult');
+            resultDiv.classList.remove('hidden');
+            
+            const badCount = Object.values(quizAnswers).filter(a => a === 'yes' || a === 'bad').length;
+            
+            if (badCount >= 2) {
+                document.getElementById('resultIcon').className = 'w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center text-4xl bg-red-500/20 text-red-400';
+                document.getElementById('resultIcon').innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                document.getElementById('resultTitle').textContent = 'Waspada: Roh Doeg Mendekat!';
+                document.getElementById('resultTitle').className = 'text-2xl font-bold mb-4 text-red-400';
+                document.getElementById('resultText').textContent = 'Ada tanda-tanda roh Doeg dalam hidupmu. Segera bertobat dan dekatkan diri pada Tuhan. Gunakan jurnal harian untuk memantau perkembanganmu.';
+            } else if (badCount === 1) {
+                document.getElementById('resultIcon').className = 'w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center text-4xl bg-yellow-500/20 text-yellow-400';
+                document.getElementById('resultIcon').innerHTML = '<i class="fas fa-balance-scale"></i>';
+                document.getElementById('resultTitle').textContent = 'Hati-Hati: Ada Celah!';
+                document.getElementById('resultTitle').className = 'text-2xl font-bold mb-4 text-yellow-400';
+                document.getElementById('resultText').textContent = 'Kamu di jalur yang benar, tapi masih ada area yang perlu diperbaiki. Terus belajar firman dan pilih pertemanan yang baik.';
+            } else {
+                document.getElementById('resultIcon').className = 'w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center text-4xl bg-green-500/20 text-green-400';
+                document.getElementById('resultIcon').innerHTML = '<i class="fas fa-crown"></i>';
+                document.getElementById('resultTitle').textContent = 'Luar Biasa: Kamu seperti Daud!';
+                document.getElementById('resultTitle').className = 'text-2xl font-bold mb-4 text-green-400';
+                document.getElementById('resultText').textContent = 'Kamu berhasil menolak roh Doeg! Terus pertahankan integritas dan kesetiaanmu pada Tuhan. Jadilah teladan bagi teman-temanmu.';
+            }
+        }
+
+        function resetQuiz() {
+            quizAnswers = {};
+            document.getElementById('quizResult').classList.add('hidden');
+            document.querySelectorAll('.quiz-item').forEach((item, index) => {
+                if (index === 0) item.classList.remove('hidden');
+                else item.classList.add('hidden');
+                
+                item.querySelectorAll('.quiz-btn').forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'ring-2', 'ring-amber-500');
+                });
+                item.querySelector('.quiz-feedback').classList.add('hidden');
+            });
+        }
+
+        // Journal Logic
+        let entries = JSON.parse(localStorage.getItem('antidoeg_journal') || '[]');
+        updateJournalStats();
+
+        function addJournalEntry(e) {
+            e.preventDefault();
+            
+            const entry = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+                temptation: document.getElementById('temptation').value,
+                verse: document.getElementById('verse').value,
+                victory: document.getElementById('victory').value,
+                timestamp: new Date().getTime()
+            };
+            
+            entries.unshift(entry);
+            localStorage.setItem('antidoeg_journal', JSON.stringify(entries));
+            
+            renderEntries();
+            updateJournalStats();
+            
+            document.getElementById('journalForm').reset();
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check mr-2"></i>Tersimpan!';
+            btn.classList.add('bg-green-600');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-green-600');
+            }, 2000);
+        }
+
+        function renderEntries() {
+            const container = document.getElementById('journalEntries');
+            
+            if (entries.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-slate-500 py-8" id="emptyState">
+                        <i class="fas fa-book-open text-4xl mb-4 opacity-50"></i>
+                        <p>Belum ada entri. Mulai catat perjalananmu hari ini!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = entries.map(entry => `
+                <div class="glass-card rounded-xl p-6 border-l-4 border-amber-500 animate-fade-in">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-2 text-amber-400 text-sm font-semibold">
+                            <i class="fas fa-calendar-day"></i>
+                            ${entry.date}
+                        </div>
+                        <button onclick="deleteEntry(${entry.id})" class="text-slate-500 hover:text-red-400 transition-colors">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-red-500/10 rounded-lg p-3 border border-red-500/20">
+                            <div class="text-xs text-red-400 font-semibold mb-1 flex items-center gap-2">
+                                <i class="fas fa-crosshairs"></i> Godaan
+                            </div>
+                            <p class="text-slate-300 text-sm">${entry.temptation}</p>
+                        </div>
+                        
+                        <div class="bg-blue-500/10 rounded-lg p-3 border border-blue-500/20">
+                            <div class="text-xs text-blue-400 font-semibold mb-1 flex items-center gap-2">
+                                <i class="fas fa-bible"></i> Ayat
+                            </div>
+                            <p class="text-slate-300 text-sm font-semibold">${entry.verse}</p>
+                        </div>
+                        
+                        <div class="bg-green-500/10 rounded-lg p-3 border border-green-500/20">
+                            <div class="text-xs text-green-400 font-semibold mb-1 flex items-center gap-2">
+                                <i class="fas fa-trophy"></i> Kemenangan
+                            </div>
+                            <p class="text-slate-300 text-sm">${entry.victory}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteEntry(id) {
+            if (confirm('Hapus entri ini?')) {
+                entries = entries.filter(e => e.id !== id);
+                localStorage.setItem('antidoeg_journal', JSON.stringify(entries));
+                renderEntries();
+                updateJournalStats();
+            }
+        }
+
+        function updateJournalStats() {
+            document.getElementById('totalEntries').textContent = entries.length;
+            document.getElementById('versesMemorized').textContent = entries.filter(e => e.verse).length;
+            
+            if (entries.length === 0) {
+                document.getElementById('currentStreak').textContent = '0';
+                return;
+            }
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            let streak = 0;
+            let checkDate = new Date(today);
+            
+            while (true) {
+                const hasEntry = entries.some(e => {
+                    const entryDate = new Date(e.timestamp);
+                    entryDate.setHours(0,0,0,0);
+                    return entryDate.getTime() === checkDate.getTime();
+                });
+                
+                if (hasEntry) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else if (checkDate.getTime() === today.getTime()) {
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            
+            document.getElementById('currentStreak').textContent = streak;
+        }
+
+        // Prayer Modal
+        function showPrayerModal() {
+            const modal = document.getElementById('prayerModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closePrayerModal() {
+            const modal = document.getElementById('prayerModal');
+            const content = document.getElementById('modalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // PDF Download Function
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Set font
+            doc.setFont("helvetica");
+            
+            // Title
+            doc.setFontSize(20);
+            doc.setTextColor(180, 83, 9); // amber-700
+            doc.text("JANGAN SAMPAI TERPENGARUH ROH DOEG", 105, 20, { align: "center" });
+            
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text("Khotbah untuk Pemuda Remaja - Berdasarkan 1 Samuel 21:7", 105, 28, { align: "center" });
+            
+            let y = 40;
+            
+            // Section 1
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text("I. PENDAHULUAN: KENALI ROH DOEG", 20, y);
+            y += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(50, 50, 50);
+            const intro1 = "Bayangkan kamu lagi main game online bareng teman, tiba-tiba ada yang curang dan ajak kamu ikut. Kalau ikut, kamu senang sebentar, tapi nanti ketahuan guru BK atau ortu marah besar. Itu mirip roh Doeg - licik, merusak, dan bikin kamu jatuh.";
+            const splitIntro1 = doc.splitTextToSize(intro1, 170);
+            doc.text(splitIntro1, 20, y);
+            y += splitIntro1.length * 5 + 5;
+            
+            doc.setTextColor(180, 83, 9);
+            doc.text("Teks Utama: 1 Samuel 21:7", 20, y);
+            y += 6;
+            doc.setTextColor(80, 80, 80);
+            doc.setFont("helvetica", "italic");
+            const verse1 = '"Maka pada hari itu juga ada di sana salah seoranng pegawai Saul, yang dikhususkan melayani TUHAN, namanya Doeg, seorang Edom, pengawas atas gembala-gembala Saul."';
+            const splitVerse1 = doc.splitTextToSize(verse1, 170);
+            doc.text(splitVerse1, 25, y);
+            doc.setFont("helvetica", "normal");
+            y += splitVerse1.length * 5 + 8;
+            
+            // Section 2
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text("II. CIRI-CIRI ROH DOEG", 20, y);
+            y += 10;
+            
+            const characteristics = [
+                { title: "1. Licik dan Pengkhianat (1 Samuel 22:9-10)", content: "Doeg lihat Daud, tapi bukannya bantu, malah lapor ke Saul. Aplikasi: Di WA group, jangan jadi 'Doeg' yang nyebar gosip teman. Amsal 11:13 - 'Orang berbual-bual menghasut rahasia, tetapi orang yang setia menutup perkara.'" },
+                { title: "2. Iri Hati dan Dendam (1 Samuel 22:18-19)", content: "Doeg bunuh imam gara-gara iri Daud lebih dipercaya Tuhan. Aplikasi: Kalau temanmu dapat nilai bagus atau juara lomba, jangan iri. Yakobus 3:16 - 'Sebab di mana ada iri hati dan perselisihan, di situ ada kekacauan dan segala perbuatan jahat.'" },
+                { title: "3. Setia pada yang Salah (1 Samuel 21:7)", content: "Doeg setia buta ke Saul yang gila dendam, bukan ke Tuhan. Aplikasi: Jangan ikut tren medsos yang haram. Mazmur 119:105 - 'Firman-Mu itu pelita bagi kakiku.'" }
+            ];
+            
+            doc.setFontSize(10);
+            characteristics.forEach(char => {
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setTextColor(220, 38, 38); // red-600
+                doc.text(char.title, 20, y);
+                y += 6;
+                doc.setTextColor(50, 50, 50);
+                const splitContent = doc.splitTextToSize(char.content, 170);
+                doc.text(splitContent, 20, y);
+                y += splitContent.length * 5 + 8;
+            });
+            
+            // Section 3
+            if (y > 250) {
+                doc.addPage();
+                y = 20;
+            }
+            
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text("III. CARA MENGALAHKAN ROH DOEG", 20, y);
+            y += 10;
+            
+            const solutions = [
+                { title: "1. Waspada dan Lari (2 Timotius 2:22)", content: "'Sebab itu jauhilah nafsu orang muda...' Kalau ada teman ajak bolos atau nonton film porno, kabur! Unfollow akun toksik." },
+                { title: "2. Bergaul dengan Orang Benar (1 Korintus 15:33)", content: "'Janganlah kamu sesat: Pergaulan yang buruk merusakkan kebiasaan yang baik.' Cari komunitas pemuda gereja atau teman yang suka baca Alkitab." },
+                { title: "3. Percaya dan Berdoa (Mazmur 25:4-5)", content: "'Beritahukanlah jalan-jalan-Mu kepadaku, ya TUHAN, tunjukkanlah itu kepadaku' Tiap pagi, baca Alkitab 5 menit dan doa minta perlindungan dari roh Doeg." }
+            ];
+            
+            doc.setFontSize(10);
+            solutions.forEach(sol => {
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setTextColor(37, 99, 235); // blue-600
+                doc.text(sol.title, 20, y);
+                y += 6;
+                doc.setTextColor(50, 50, 50);
+                const splitContent = doc.splitTextToSize(sol.content, 170);
+                doc.text(splitContent, 20, y);
+                y += splitContent.length * 5 + 6;
+            });
+            
+            // Section 4
+            if (y > 240) {
+                doc.addPage();
+                y = 20;
+            }
+            
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text("IV. KESIMPULAN", 20, y);
+            y += 10;
+            
+            doc.setFontSize(11);
+            doc.setTextColor(180, 83, 9);
+            doc.text("Roh Doeg ingin hancurkan masa depanmu, tapi Tuhan lebih kuat!", 105, y, { align: "center" });
+            y += 8;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(50, 50, 50);
+            const conclusion = "Seperti Daud yang jadi raja, kamu bisa jadi pemimpin hebat kalau tolak roh itu. Hari ini, putuskan: Aku pilih setia Tuhan, bukan ikut Doeg!";
+            const splitConclusion = doc.splitTextToSize(conclusion, 170);
+            doc.text(splitConclusion, 20, y);
+            y += splitConclusion.length * 5 + 10;
+            
+            // Doa
+            doc.setFillColor(254, 243, 199); // amber-100
+            doc.rect(20, y, 170, 50, 'F');
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.text("DOA PENOLAKAN ROH DOEG:", 25, y + 8);
+            doc.setFontSize(9);
+            const prayer = "Tuhan Yesus, saya mengakui pernah terpengaruh roh Doeg. Hari ini saya bertobat. Hapus roh licik, iri, dan pengkhianat ini. Isi saya dengan Roh Kudus: kasih, sukacita, damai sejahtera, kesabaran, kemurahan, kebaikan, dan kesetiaan. Jadikan saya seperti Daud yang setia pada-Mu. Dalam nama Yesus, Amin.";
+            const splitPrayer = doc.splitTextToSize(prayer, 160);
+            doc.text(splitPrayer, 25, y + 16);
+            
+            // Footer
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text("Dibuat dengan Aplikasi Anti-Doeg | 1 Samuel 21:7", 105, 290, { align: "center" });
+            
+            // Save
+            doc.save("Khotbah-Anti-Doeg-1Samuel-21-7.pdf");
+        }
+
+        // Navigation
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Initialize
+        renderEntries();
+
+        // Intersection Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('slide-in');
+                }
+            });
+        });
+
+        document.querySelectorAll('.sermon-section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
